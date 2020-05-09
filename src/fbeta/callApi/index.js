@@ -1,8 +1,15 @@
 "use strict";
 const axios = require("axios");
 const { get } = require("lodash");
+
+/**
+ * The initial call Api instance
+ * @param {string} baseURL
+ * @return {object}
+ */
+
 const instance = axios.create({
-  baseURL: process.env.FVPN_ACCOUNT_URL,
+  baseURL: process.env.BASE_URL,
 });
 
 instance.interceptors.request.use(
