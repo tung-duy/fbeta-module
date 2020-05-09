@@ -1,0 +1,50 @@
+/node_modules
+/.pnp
+.pnp.js
+/public/bundle
+/public/css
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+.env.bak
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock
+
+
+.jekyll-metadata
+.htaccess
+.DS_Store
+.sass-cache
+Gemfile.lock
+_site/
+_drafts/
+
+# Logs
+logs
+*.log
+
+# Build
+dist
+
+# IntelliJ
+.idea
+/*.iml
+
+# Coverage reports
+/.nyc-coverage
+/.nyc-coverage-temp
+/lint-report.html
+/.nyc_output/
+
+/.idea
+
