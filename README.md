@@ -1,5 +1,5 @@
 # Fbeta Helper Management
-
+[![npm version](https://badge.fury.io/js/%40fbeta%2Fhelper.svg)](https://www.npmjs.com/package/@fbeta/helper)
 <p align="center">
   <img width="460" height="300" src="https://dev.fpt.work/images/FTI/15c12a77-2b45-4057-bb0a-aa07fb1d8a29.svg">
 </p>

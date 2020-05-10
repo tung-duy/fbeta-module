@@ -1,6 +1,6 @@
 {
   "name": "@fbeta/helper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "./src/index.js",
   "scripts": {
     "dev": "node_modules/webpack/bin/webpack.js --mode production --watch --progress --hide-modules",

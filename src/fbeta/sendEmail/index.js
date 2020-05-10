@@ -4,6 +4,7 @@ const hogan = require("hogan.js");
 const striptags = require("striptags");
 const Joi = require("joi");
 const { createTransport } = require("nodemailer");
+const { merge } = require('lodash');
 
 const renderPartFromFile = (template, items) => {
   const partialParts = {
@@ -16,13 +17,16 @@ const renderPartFromFile = (template, items) => {
 };
 
 const sendEmail = (emailData, config) => {
+  let defaultConfig = {
+    host: process.env.HOST_SENDER,
+    user: process.env.USER_SENDER,
+    pass: process.env.PASS_SENDER,
+    port: process.env.PORT_SENDER
+  }
+  if (typeof config === 'object') {
+    defaultConfig = merge(defaultConfig, config);
+  }
   const { template, subject, email, data: content, sender, cc } = emailData;
-  let { port, host, user, pass, ...moreConfig } = config;
-
-  port ? (port = parseInt(port)) : process.env.PORT_SENDER;
-  host ? host : process.env.HOST_SENDER;
-  user ? user : process.env.USER_SENDER;
-  pass ? pass : process.env.PASS_SENDER;
 
   const errors = { success: false };
 
@@ -40,7 +44,7 @@ const sendEmail = (emailData, config) => {
   });
 
   const result = Joi.validate(
-    { port, host, user, pass, ...emailData, ...moreConfig },
+    { ...emailData, ...defaultConfig },
     schema,
     {
       abortEarly: false,
@@ -59,11 +63,11 @@ const sendEmail = (emailData, config) => {
   }
 
   const transporter = createTransport({
-    port: process.env.PORT_SENDER || port,
-    host: process.env.HOST_SENDER || host,
+    port: defaultConfig.port,
+    host: defaultConfig.host,
     auth: {
-      user: process.env.USER_SENDER || user,
-      pass: process.env.PASSWORD_SENDER || pass,
+      user: defaultConfig.user,
+      pass: defaultConfig.pass,
     },
   });
   let message;
