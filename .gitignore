@@ -15,12 +15,12 @@ dist
 .DS_Store
 .env
 .env.bak
-
+test*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 yarn.lock
-
+package-lock.json
 
 .jekyll-metadata
 .htaccess

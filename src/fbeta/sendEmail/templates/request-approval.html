@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Fwork - Confirm email</title>
+  <style>
+    body {
+      margin: 0 !important;
+    }
+
+    .container {
+      min-width: 280px;
+      max-width: 600px;
+      color: #172b4d !important;
+      font-size: 14px !important;
+      font-family: 'open sans', 'helvetica neue', sans-serif !important;
+      margin: 0 auto !important;
+      padding: 40px !important;
+      box-sizing: border-box;
+    }
+
+    .container>p {
+      font-weight: 600 !important;
+      color: #172b4d !important;
+      font-size: 20px !important;
+    }
+
+    .content div {
+      padding: 4px 0;
+    }
+
+    .content div span.content--key {
+      padding: 4px 0;
+      color: #8a94a5;
+      margin-right: 8px;
+    }
+
+    .title,.sub_title {
+      display: block !important;
+      margin: 10px 0 !important;
+    }
+
+    .sub_title>span {
+      font-weight: 600 !important;
+    }
+
+    .title>b,.title>span {
+      font-weight: 600 !important;
+    }
+
+    .sub_title a {
+      color: #2e7d32 !important;
+    }
+
+
+    .action {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      padding-top: 24px !important;
+    }
+
+    .action > a {
+      display: block !important;
+      width: 120px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      margin: 8px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .action>a.refuse {
+      color: #172b4d;
+    }
+
+    .action>a.approval {
+      color: #ffffff;
+    }
+
+    .ink_bar {
+      border-top: 1px solid #e7e9ed;
+      margin: 24px 0;
+    }
+
+    .contact>span>a {
+      color: #1976d2;
+    }
+
+    .footer {
+      font-size: 12px !important;
+      color: #8a94a5;
+    }
+
+    .footer .link {
+      color: #ff9800;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .footer .doter {
+      width: 3px;
+      height: 3px;
+      display: inline-block;
+      border-radius: 50%;
+      margin: 2px;
+    }
+
+    .hide {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <table bgcolor="#f3f4f6" width="100%" cellpadding="10" style="font-size: 14px; padding: 24px 0;">
+    <tr>
+      <td align="center">
+        <img src="http://i.imgur.com/UruKLVW.png" alt="Logo Fwork">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="container" style="background-color: #ffffff;">
+          <p>Xin chào {{ nameReceiver }}</p>
+          <span class="title">{{{ titleEmail }}}</span>
+          <div class="content">
+            <div>
+              <span class="content--key">- Tên đề xuất:</span>
+              <span>{{ dataReference.name }}</span>
+            </div>
+            <div>
+              <span class="content--key">- Thời gian tạo:</span>
+              <span>{{ dataReference.createdAt }}</span>
+            </div>
+            <div class="{{ dataReference.hideMailContent }}">
+              <span class="content--key">- Người đề xuất:</span>
+              <span>{{ dataReference.nameOwner }}</span>
+            </div>
+            <div class="{{ dataReference.hideMailContent }}">
+              <span class="content--key">- Chức vụ:</span>
+              <span>{{ dataReference.positionOwner }}</span>
+            </div>
+          </div>
+          <span class="sub_title">Vui lòng xem chi tiết <a href="{{ fworkUrl }}{{ dataReference.urlDetail }}">tại đây</a><span class="{{ dataReference.hideMailContent }}"> hoặc phê duyệt nhanh</span>.
+          </span>
+          <div class="action {{ dataReference.hideMailContent }}">
+            <a href="{{ fworkUrl }}{{ dataReference.urlDetail }}?approval=false" class="refuse" style="background-color: #f3f4f6;">
+              Từ chối
+            </a>
+            <a href="{{ fworkUrl }}{{ dataReference.urlDetail }}?approval=true" class="approval" style="background-color: #2e7d32;">
+              Phê duyệt
+            </a>
+          </div>
+          <div class="ink_bar"></div>
+          <div class="contact">
+            <span>
+              Bạn cần trợ giúp? <a href="{{ fworkUrl }}">Liên hệ bộ phận hỗ trợ</a> hoặc kết nối với chúng tôi <a
+                href="{{ fworkUrl }}">@fworkapp</a>.
+              Gửi phản hồi và góp ý? Hãy cho chúng tôi biết tại <a href="{{ fworkUrl }}">trang phản hồi</a>.
+            </span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <div class="footer">
+          <div style="margin: 6px 0;">
+            <span>Được gửi bởi FWork</span>
+            <span style="background-color: #8a94a5;" class="doter"></span>
+            <a href="{{ fworkUrl }}" class="link">truy cập website</a>
+            <span style="background-color: #8a94a5;" class="doter"></span>
+            <a href="{{ fworkUrl }}" class="link">@fworkapp</a>
+          </div>
+          <div>Tâng 12A toà TNR 54A Nguyễn Chí Thanh, phường Láng Thượng, quận Đống Đa, Hà Nội</div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
