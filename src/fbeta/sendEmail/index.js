@@ -3,8 +3,9 @@ const fs = require("fs");
 const hogan = require("hogan.js");
 const striptags = require("striptags");
 const Joi = require("joi");
+const mailGun = require("mailgun-js");
 const { createTransport } = require("nodemailer");
-const { merge } = require('lodash');
+const { merge } = require("lodash");
 
 const renderPartFromFile = (template, items) => {
   const partialParts = {
@@ -17,39 +18,45 @@ const renderPartFromFile = (template, items) => {
 };
 
 const sendEmail = (emailData, config) => {
-  let defaultConfig = {
+  const smtpDefaultConfig = {
     host: process.env.HOST_SENDER,
     user: process.env.USER_SENDER,
     pass: process.env.PASS_SENDER,
-    port: process.env.PORT_SENDER
-  }
-  if (typeof config === 'object') {
-    defaultConfig = merge(defaultConfig, config);
-  }
-  const { template, subject, email, data: content, sender, cc } = emailData;
-
-  const errors = { success: false };
-
-  const schema = Joi.object().keys({
+    port: process.env.PORT_SENDER,
+  };
+  const mailGunDefaultConfig = {
+    api_key: process.env.API_KEY_SENDER,
+    domain: process.env.DOMAIN_SENDER,
+  };
+  let schema = {
     template: Joi.string().required().label("Template"),
     subject: Joi.string().required().label("Subject"),
     email: Joi.string().email({ minDomainAtoms: 2 }).required().label("Email"),
     data: Joi.object(),
     sender: Joi.string(),
     cc: Joi.string(),
-    port: Joi.number().min(2).required().label("Port"),
-    host: Joi.string().min(2).required().max(32).label("Host"),
-    user: Joi.string().required().label("User"),
-    pass: Joi.string().required().label("Password"),
-  });
+  };
 
-  const result = Joi.validate(
-    { ...emailData, ...defaultConfig },
-    schema,
-    {
-      abortEarly: false,
+  let defaultConfig;
+  if (typeof config === "object") {
+    if (config.api_key && config.domain) {
+      defaultConfig = merge(mailGunDefaultConfig, config);
+      schema.api_key = Joi.string().required().label("Api key");
+      schema.domain = Joi.string().required().label("Domain");
+    } else {
+      defaultConfig = merge(smtpDefaultConfig, config);
+      schema.port = Joi.number().min(2).required().label("Port");
+      schema.host = Joi.string().min(2).required().max(32).label("Host");
+      schema.user = Joi.string().required().label("User");
+      schema.pass = Joi.string().required().label("Password");
     }
-  );
+  }
+
+  const { template, subject, email, data: content, sender, cc } = emailData;
+  const errors = { success: false };
+  const result = Joi.validate({ ...emailData, ...defaultConfig }, schema, {
+    abortEarly: false,
+  });
 
   if (result.error) {
     result.error.details.map((index) => {
@@ -62,14 +69,23 @@ const sendEmail = (emailData, config) => {
     return errors;
   }
 
-  const transporter = createTransport({
-    port: defaultConfig.port,
-    host: defaultConfig.host,
-    auth: {
-      user: defaultConfig.user,
-      pass: defaultConfig.pass,
-    },
-  });
+  let transporter;
+  if (defaultConfig.api_key && defaultConfig.domain) {
+    transporter = mailGun({
+      apiKey: defaultConfig.api_key,
+      domain: defaultConfig.domain,
+    });
+  } else {
+    transporter = createTransport({
+      port: defaultConfig.port,
+      host: defaultConfig.host,
+      auth: {
+        user: defaultConfig.user,
+        pass: defaultConfig.pass,
+      },
+    });
+  }
+
   let message;
   try {
     const templateFile = fs
@@ -102,13 +118,25 @@ const sendEmail = (emailData, config) => {
     if (!message || message.length === 0) {
       reject(new Error("Email message is empty"));
     }
-    return transporter.sendMail(dataPost, (err, response) => {
-      if (err) {
-        return reject(err);
-      }
-      console.log(`FWK ---->: Send ${subject} email successfully!`);
-      return resolve(response);
-    });
+
+    if (defaultConfig.api_key && defaultConfig.domain) {
+      return transporter.messages().send(dataPost, (err, response) => {
+        if (err) {
+          cb(err, null);
+          return reject(err);
+        }
+        console.log(`FWK ---->: Send ${subject} email successfully!`);
+        return resolve(response);
+      });
+    } else {
+      return transporter.sendMail(dataPost, (err, response) => {
+        if (err) {
+          return reject(err);
+        }
+        console.log(`FWK ---->: Send ${subject} email successfully!`);
+        return resolve(response);
+      });
+    }
   });
 };
 
