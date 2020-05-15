@@ -39,7 +39,12 @@ const sendEmail = (emailData, config) => {
 
   let defaultConfig;
   if (typeof config === "object") {
-    if (config.api_key && config.domain) {
+    if (
+      config.api_key ||
+      config.domain ||
+      mailGunDefaultConfig.api_key ||
+      mailGunDefaultConfig.domain
+    ) {
       defaultConfig = merge(mailGunDefaultConfig, config);
       schema.api_key = Joi.string().required().label("Api key");
       schema.domain = Joi.string().required().label("Domain");
@@ -122,7 +127,7 @@ const sendEmail = (emailData, config) => {
     if (defaultConfig.api_key && defaultConfig.domain) {
       return transporter.messages().send(dataPost, (err, response) => {
         if (err) {
-          cb(err, null);
+          console.log("err", err);
           return reject(err);
         }
         console.log(`FWK ---->: Send ${subject} email successfully!`);
