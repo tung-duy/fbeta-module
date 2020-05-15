@@ -39,12 +39,7 @@ const sendEmail = (emailData, config) => {
 
   let defaultConfig;
   if (typeof config === "object") {
-    if (
-      config.api_key ||
-      config.domain ||
-      mailGunDefaultConfig.api_key ||
-      mailGunDefaultConfig.domain
-    ) {
+    if (config.api_key || config.domain) {
       defaultConfig = merge(mailGunDefaultConfig, config);
       schema.api_key = Joi.string().required().label("Api key");
       schema.domain = Joi.string().required().label("Domain");
@@ -55,6 +50,8 @@ const sendEmail = (emailData, config) => {
       schema.user = Joi.string().required().label("User");
       schema.pass = Joi.string().required().label("Password");
     }
+  } else {
+    defaultConfig = merge(smtpDefaultConfig, mailGunDefaultConfig);
   }
 
   const { template, subject, email, data: content, sender, cc } = emailData;
